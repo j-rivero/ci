@@ -153,8 +153,7 @@ if [ "$CI_USE_CONNEXT_DEBS" = "true" ]; then
   export CI_ARGS="$CI_ARGS --connext-debs"
   export DOCKER_BUILD_ARGS="$DOCKER_BUILD_ARGS --build-arg INSTALL_CONNEXT_DEBS=$CI_USE_CONNEXT_DEBS"
   # need to create a fake license so the dockerfile don't fail when using ADD. It won't be used.
-  mkdir rticonnextdds-license
-  echo "fake" > rticonnextdds-license/rti_license.dat
+  echo "fake" > linux_docker_resources/rticonnextdds-license/rti_license.dat
 fi
 if [ -z "${CI_ROS2_REPOS_URL+x}" ]; then
   CI_ROS2_REPOS_URL="@default_repos_url"
