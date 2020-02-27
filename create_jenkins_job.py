@@ -64,6 +64,11 @@ def main(argv=None):
         '--commit', action='store_true',
         help='Actually modify the Jenkins jobs instead of only doing a dry run',
     )
+    parser.add_argument(
+        '--avoid-credentials-for-rticonnext', action='store_true',
+        help='Do not configure jobs to use credentials for private rticonnext-src repo'
+    )
+
     args = parser.parse_args(argv)
 
     data = {
@@ -92,6 +97,7 @@ def main(argv=None):
         'turtlebot_demo': False,
         'build_timeout_mins': 0,
         'ubuntu_distro': 'bionic',
+        'avoid_credentials': args.avoid_credentials_for_rticonnext,
     }
 
     jenkins = connect(args.jenkins_url)
