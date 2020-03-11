@@ -63,7 +63,7 @@ All packages listed here have to be available from either the primary or supplem
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
         <url>@(ci_scripts_repository)</url>
-        <credentialsId>1c2004f6-2e00-425d-a421-2e1ba62ca7a7</credentialsId>
+        <credentialsId>@[if not avoid_credentials]1c2004f6-2e00-425d-a421-2e1ba62ca7a7@[end if]</credentialsId>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
@@ -78,7 +78,7 @@ All packages listed here have to be available from either the primary or supplem
     <submoduleCfg class="list"/>
     <extensions>
       <hudson.plugins.git.extensions.impl.SubmoduleOption>
-        <disableSubmodules>false</disableSubmodules>
+        <disableSubmodules>@[if avoid_credentials]true@[else]false@[end if]</disableSubmodules>
         <recursiveSubmodules>true</recursiveSubmodules>
         <trackingSubmodules>false</trackingSubmodules>
         <reference/>
@@ -103,7 +103,7 @@ All packages listed here have to be available from either the primary or supplem
   <builders>
     <hudson.plugins.groovy.SystemGroovy plugin="groovy@@2.2">
       <source class="hudson.plugins.groovy.StringSystemScriptSource">
-        <script plugin="script-security@@1.70">
+        <script plugin="script-security@@1.68">
           <script><![CDATA[build.setDescription("""\
 @[if 'linux' in os_name]@
 ubuntu_distro: ${build.buildVariableResolver.resolve('CI_UBUNTU_DISTRO')}, <br/>
@@ -164,6 +164,8 @@ fi
 if [ "$CI_USE_CONNEXT_DEBS" = "true" ]; then
   export DOCKER_BUILD_ARGS="${DOCKER_BUILD_ARGS} --build-arg INSTALL_CONNEXT_DEBS=$CI_USE_CONNEXT_DEBS"
   export CI_ARGS="$CI_ARGS --connext-debs"
+  # need to create a fake license so the dockerfile does not fail when using ADD. It won't be used.
+  echo "fake" > linux_docker_resources/rticonnextdds-license/rti_license.dat
 fi
 if [ -z "${CI_ROS2_REPOS_URL+x}" ]; then
   CI_ROS2_REPOS_URL="@default_repos_url"
@@ -445,7 +447,7 @@ echo "# END SECTION"
     <hudson.plugins.ansicolor.AnsiColorBuildWrapper plugin="ansicolor@@0.6.2">
       <colorMapName>xterm</colorMapName>
     </hudson.plugins.ansicolor.AnsiColorBuildWrapper>
-@[if os_name not in ['windows', 'windows-metal']]@
+@[if not avoid_credentials and os_name not in ['windows', 'windows-metal']]@
     <com.cloudbees.jenkins.plugins.sshagent.SSHAgentBuildWrapper plugin="ssh-agent@@1.17">
       <credentialIds>
         <string>1c2004f6-2e00-425d-a421-2e1ba62ca7a7</string>
